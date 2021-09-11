@@ -14,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -60,7 +59,7 @@ abstract class ItemEntityMixin extends Entity {
         if (!fluid.isSource())
             return false;
 
-        addToTracker(InWorldRecipeType.ITEM_FLUID, ItemFluidRecipe.class, entity, pos, fluid);
+        addToTracker(InWorldRecipeType.ITEM_FLUID, ItemFluidRecipe.class, entity, pos);
         return true;
     }
 
@@ -79,14 +78,13 @@ abstract class ItemEntityMixin extends Entity {
 
         this.setInvulnerable(true);
 
-        addToTracker(InWorldRecipeType.ITEM_BURN, ItemFireRecipe.class, entity, pos, block);
+        addToTracker(InWorldRecipeType.ITEM_BURN, ItemFireRecipe.class, entity, pos);
         return true;
     }
 
-    private static <R extends DurationRecipe<List<ItemEntity>, S>, S extends StateHolder<?, ?>> void addToTracker(InWorldRecipeType<R> storage, Class<R> recipe, ItemEntity entity, BlockPos pos, S state) {
-        RecipeDataTracker<List<ItemEntity>, S, R> tracker = DurationManager.get(entity.level, storage, recipe).getTracker();
+    private static <R extends DurationRecipe<List<ItemEntity>>> void addToTracker(InWorldRecipeType<R> storage, Class<R> recipe, ItemEntity entity, BlockPos pos) {
+        RecipeDataTracker<List<ItemEntity>, R> tracker = DurationManager.get(entity.level, storage, recipe).getTracker();
         List<ItemEntity> entityList = tracker.getInput(pos, LinkedList::new);
         if (!entityList.contains(entity)) entityList.add(entity);
-        tracker.setState(pos, state);
     }
 }

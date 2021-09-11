@@ -3,17 +3,16 @@ package ky.someone.mods.interactio.recipe.base;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import ky.someone.mods.interactio.Utils.RecipeTickEvent;
+import ky.someone.mods.interactio.Utils.RecipeEvent;
 import ky.someone.mods.interactio.recipe.Events;
 import ky.someone.mods.interactio.recipe.Events.EventType;
 import ky.someone.mods.interactio.recipe.ingredient.BlockIngredient;
 import ky.someone.mods.interactio.recipe.ingredient.DynamicOutput;
 import ky.someone.mods.interactio.recipe.ingredient.FluidIngredient;
 import ky.someone.mods.interactio.recipe.ingredient.ItemIngredient;
-import ky.someone.mods.interactio.recipe.util.DefaultInfo;
+import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.level.block.state.StateHolder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,9 +20,9 @@ import java.util.Map;
 
 import static ky.someone.mods.interactio.Utils.runAll;
 
-public abstract class DurationRecipe<T, S extends StateHolder<?, ?>> extends InWorldRecipe<T, S, DefaultInfo> {
+public abstract class DurationRecipe<T> extends InWorldRecipe<T, CraftingInfo> {
 
-    protected Map<RecipeTickEvent<T, S>, JsonObject> tickConsumers;
+    protected Map<RecipeEvent<T>, JsonObject> tickConsumers;
     protected final int duration;
 
     public DurationRecipe(ResourceLocation id, List<ItemIngredient> itemInputs, BlockIngredient blockInput, FluidIngredient fluidInput, DynamicOutput output, boolean canRunParallel, int duration, JsonObject json) {
@@ -34,8 +33,8 @@ public abstract class DurationRecipe<T, S extends StateHolder<?, ?>> extends InW
         this.parseTickEvents();
     }
 
-    public void tick(T input, S state, DefaultInfo info) {
-        runAll(this.tickConsumers, input, state, info);
+    public void tick(T input, CraftingInfo info) {
+        runAll(this.tickConsumers, input, info);
     }
 
     public int getDuration() {
@@ -56,7 +55,7 @@ public abstract class DurationRecipe<T, S extends StateHolder<?, ?>> extends InW
             if (!object.has("type")) continue;
             ResourceLocation type = new ResourceLocation(GsonHelper.getAsString(object, "type"));
 
-            RecipeTickEvent<T, S> event = (RecipeTickEvent<T, S>) Events.events.get(type);
+            RecipeEvent<T> event = (RecipeEvent<T>) Events.events.get(type);
             if (event != null) this.tickConsumers.put(event, object);
         }
     }

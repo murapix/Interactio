@@ -8,7 +8,7 @@ import ky.someone.mods.interactio.recipe.base.InWorldRecipe;
 import ky.someone.mods.interactio.recipe.base.InWorldRecipeType;
 import ky.someone.mods.interactio.recipe.ingredient.DynamicOutput;
 import ky.someone.mods.interactio.recipe.ingredient.ItemIngredient;
-import ky.someone.mods.interactio.recipe.util.DefaultInfo;
+import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -17,7 +17,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.BaseFireBlock;
-import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +24,7 @@ import java.util.List;
 import static ky.someone.mods.interactio.Utils.compareStacks;
 import static ky.someone.mods.interactio.Utils.testAll;
 
-public class ItemFireRecipe extends DurationRecipe<List<ItemEntity>, BlockState> {
+public class ItemFireRecipe extends DurationRecipe<List<ItemEntity>> {
 
     public static final Serializer SERIALIZER = new Serializer();
 
@@ -34,14 +33,14 @@ public class ItemFireRecipe extends DurationRecipe<List<ItemEntity>, BlockState>
     }
 
     @Override
-    public boolean canCraft(List<ItemEntity> entities, BlockState state, DefaultInfo info) {
-        return state.getBlock() instanceof BaseFireBlock
+    public boolean canCraft(List<ItemEntity> entities, CraftingInfo info) {
+        return info.getBlockState().getBlock() instanceof BaseFireBlock
                 && compareStacks(entities, this.itemInputs)
-                && testAll(this.startCraftConditions, entities, state, info);
+                && testAll(this.startCraftConditions, entities, info);
     }
 
     @Override
-    public void craft(List<ItemEntity> entities, DefaultInfo info) {
+    public void craft(List<ItemEntity> entities, CraftingInfo info) {
         InWorldRecipe.craftItemList(this, entities, info);
     }
 

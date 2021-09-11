@@ -3,7 +3,7 @@ package ky.someone.mods.interactio.event;
 import ky.someone.mods.interactio.Utils;
 import ky.someone.mods.interactio.recipe.base.InWorldRecipeType;
 import ky.someone.mods.interactio.recipe.duration.DurationManager;
-import ky.someone.mods.interactio.recipe.util.DefaultInfo;
+import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import ky.someone.mods.interactio.recipe.util.EntityInfo;
 import ky.someone.mods.interactio.recipe.util.ExplosionInfo;
 import me.shedaniel.architectury.event.events.*;
@@ -57,10 +57,8 @@ public enum InteractioEventHandler {
 
         // since we're removing blocks from the affected block list, we need to do this
         blocks.stream().filter(pos -> !level.isEmptyBlock(pos)).forEach(pos -> {
-            BlockState state = level.getBlockState(pos);
-
             InWorldRecipeType.BLOCK_EXPLODE
-                    .apply(recipe -> recipe.canCraft(pos, state, new ExplosionInfo(recipe, level, explosion)),
+                    .apply(recipe -> recipe.canCraft(pos, new ExplosionInfo(recipe, level, explosion)),
                             recipe -> recipe.craft(pos, new ExplosionInfo(recipe, level, explosion)));
         });
     }
@@ -74,13 +72,12 @@ public enum InteractioEventHandler {
                 .filter(entity -> InWorldRecipeType.ITEM_LIGHTNING.isValidInput(entity.getItem()))
                 .collect(Collectors.toList());
 
-        InWorldRecipeType.ITEM_LIGHTNING.applyAll(recipe -> recipe.canCraft(entities, new DefaultInfo(recipe, level, bolt.blockPosition())),
-                recipe -> recipe.craft(entities, new DefaultInfo(recipe, level, bolt.blockPosition())));
+        InWorldRecipeType.ITEM_LIGHTNING.applyAll(recipe -> recipe.canCraft(entities, new CraftingInfo(recipe, level, bolt.blockPosition())),
+                recipe -> recipe.craft(entities, new CraftingInfo(recipe, level, bolt.blockPosition())));
 
         BlockPos target = bolt.blockPosition().below();
-        BlockState state = level.getBlockState(target);
-        InWorldRecipeType.BLOCK_LIGHTNING.applyAll(recipe -> recipe.canCraft(target, state, new DefaultInfo(recipe, level, target)),
-                recipe -> recipe.craft(target, new DefaultInfo(recipe, level, target)));
+        InWorldRecipeType.BLOCK_LIGHTNING.applyAll(recipe -> recipe.canCraft(target, new CraftingInfo(recipe, level, target)),
+                recipe -> recipe.craft(target, new CraftingInfo(recipe, level, target)));
 
         bolt.remove();
     }
@@ -90,13 +87,12 @@ public enum InteractioEventHandler {
 
         List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class, new AABB(pos));
         BlockPos hitPos = pos.below();
-        BlockState hitState = level.getBlockState(hitPos);
 
-        InWorldRecipeType.ITEM_ANVIL.applyAll(recipe -> recipe.canCraft(items, hitState, new DefaultInfo(recipe, level, pos)),
-                recipe -> recipe.craft(items, new DefaultInfo(recipe, level, pos)));
+        InWorldRecipeType.ITEM_ANVIL.applyAll(recipe -> recipe.canCraft(items, new CraftingInfo(recipe, level, pos)),
+                recipe -> recipe.craft(items, new CraftingInfo(recipe, level, pos)));
 
-        InWorldRecipeType.BLOCK_ANVIL.apply(recipe -> recipe.canCraft(pos, hitState, new DefaultInfo(recipe, level, hitPos)),
-                recipe -> recipe.craft(pos, new DefaultInfo(recipe, level, hitPos)));
+        InWorldRecipeType.BLOCK_ANVIL.apply(recipe -> recipe.canCraft(pos, new CraftingInfo(recipe, level, hitPos)),
+                recipe -> recipe.craft(pos, new CraftingInfo(recipe, level, hitPos)));
 
     }
 

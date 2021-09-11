@@ -11,11 +11,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.block.state.BlockState;
 
 import static ky.someone.mods.interactio.Utils.testAll;
 
-public final class BlockExplosionRecipe extends InWorldRecipe<BlockPos, BlockState, ExplosionInfo> {
+public final class BlockExplosionRecipe extends InWorldRecipe<BlockPos, ExplosionInfo> {
 
     public static final Serializer SERIALIZER = new Serializer();
 
@@ -23,15 +22,17 @@ public final class BlockExplosionRecipe extends InWorldRecipe<BlockPos, BlockSta
         super(id, null, blockInput, null, output, false, json);
 
         this.postCraft.put((pos, info, j) -> {
-            if (info.getRecipe().getOutput().isBlock() || info.getRecipe().getOutput().isFluid())
-                info.getExplosion().getToBlow().remove(pos);
+            if (info instanceof ExplosionInfo) {
+                if (info.getRecipe().getOutput().isBlock() || info.getRecipe().getOutput().isFluid())
+                    ((ExplosionInfo) info).getExplosion().getToBlow().remove(pos);
+            }
         }, null);
     }
 
     @Override
-    public boolean canCraft(BlockPos pos, BlockState state, ExplosionInfo info) {
-        return this.blockInput.test(state.getBlock())
-                && testAll(this.startCraftConditions, pos, state, info);
+    public boolean canCraft(BlockPos pos, ExplosionInfo info) {
+        return this.blockInput.test(info.getBlockState().getBlock())
+                && testAll(this.startCraftConditions, pos, info);
     }
 
     @Override

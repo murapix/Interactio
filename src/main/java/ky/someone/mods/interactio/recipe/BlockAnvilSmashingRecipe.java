@@ -5,17 +5,16 @@ import ky.someone.mods.interactio.recipe.base.InWorldRecipe;
 import ky.someone.mods.interactio.recipe.base.InWorldRecipeType;
 import ky.someone.mods.interactio.recipe.ingredient.BlockIngredient;
 import ky.someone.mods.interactio.recipe.ingredient.DynamicOutput;
-import ky.someone.mods.interactio.recipe.util.DefaultInfo;
+import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.block.state.BlockState;
 
 import static ky.someone.mods.interactio.Utils.testAll;
 
-public final class BlockAnvilSmashingRecipe extends InWorldRecipe<BlockPos, BlockState, DefaultInfo> {
+public final class BlockAnvilSmashingRecipe extends InWorldRecipe<BlockPos, CraftingInfo> {
 
     public static final Serializer SERIALIZER = new Serializer();
 
@@ -25,15 +24,15 @@ public final class BlockAnvilSmashingRecipe extends InWorldRecipe<BlockPos, Bloc
     }
 
     @Override
-    public boolean canCraft(BlockPos pos, BlockState state, DefaultInfo info) {
-        return this.blockInput.test(state.getBlock())
-                && testAll(this.startCraftConditions, pos, state, info);
+    public boolean canCraft(BlockPos pos, CraftingInfo info) {
+        return this.blockInput.test(info)
+                && testAll(this.startCraftConditions, pos, info);
     }
 
     // anvilPos will be the position of the anvil
     // hitPos will be the position of the block hit
     @Override
-    public void craft(BlockPos hitPos, DefaultInfo info) {
+    public void craft(BlockPos hitPos, CraftingInfo info) {
         craftBlock(this, hitPos, info);
     }
 

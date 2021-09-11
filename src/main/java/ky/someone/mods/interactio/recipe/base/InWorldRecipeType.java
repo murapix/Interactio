@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 import static ky.someone.mods.interactio.Interactio.*;
 
-public class InWorldRecipeType<T extends InWorldRecipe<?, ?, ?>> implements RecipeType<T> {
+public class InWorldRecipeType<T extends InWorldRecipe<?, ?>> implements RecipeType<T> {
 
     private static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID);
 
@@ -36,7 +36,7 @@ public class InWorldRecipeType<T extends InWorldRecipe<?, ?, ?>> implements Reci
     public static final InWorldRecipeType<ItemEntityKillRecipe> ITEM_ENTITY_KILL = create("item_entity_kill", ItemEntityKillRecipe.SERIALIZER);
     public static final InWorldRecipeType<BlockEntityKillRecipe> BLOCK_ENTITY_KILL = create("block_entity_kill", BlockEntityKillRecipe.SERIALIZER);
 
-    private static <T extends InWorldRecipe<?, ?, ?>> InWorldRecipeType<T> create(String name, RecipeSerializer<T> serializer) {
+    private static <T extends InWorldRecipe<?, ?>> InWorldRecipeType<T> create(String name, RecipeSerializer<T> serializer) {
         return new InWorldRecipeType<>(name, serializer);
     }
 

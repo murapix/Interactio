@@ -16,7 +16,7 @@ import java.util.List;
 import static ky.someone.mods.interactio.Utils.compareStacks;
 import static ky.someone.mods.interactio.Utils.testAll;
 
-public abstract class StatelessItemRecipe<U extends CraftingInfo> extends StatelessRecipe<List<ItemEntity>, U> {
+public abstract class StatelessItemRecipe<U extends CraftingInfo> extends InWorldRecipe<List<ItemEntity>, U> {
 
     public StatelessItemRecipe(ResourceLocation id, List<ItemIngredient> itemInputs, BlockIngredient blockInput, FluidIngredient fluidInput, DynamicOutput output, boolean canRunParallel, JsonObject json) {
         super(id, itemInputs, blockInput, fluidInput, output, canRunParallel, json);
@@ -29,7 +29,7 @@ public abstract class StatelessItemRecipe<U extends CraftingInfo> extends Statel
 
     @Override
     public boolean canCraft(List<ItemEntity> entities, U info) {
-        return testAll(this.startCraftConditions, entities, null, info)
+        return testAll(this.startCraftConditions, entities, info)
                 && compareStacks(entities, this.itemInputs);
     }
 

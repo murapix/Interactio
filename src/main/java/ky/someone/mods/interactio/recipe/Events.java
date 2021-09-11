@@ -2,10 +2,8 @@ package ky.someone.mods.interactio.recipe;
 
 import com.google.gson.JsonObject;
 import ky.someone.mods.interactio.Utils;
-import ky.someone.mods.interactio.Utils.RecipeContinuePredicate;
+import ky.someone.mods.interactio.Utils.RecipePredicate;
 import ky.someone.mods.interactio.Utils.RecipeEvent;
-import ky.someone.mods.interactio.Utils.RecipeStartPredicate;
-import ky.someone.mods.interactio.Utils.RecipeTickEvent;
 import ky.someone.mods.interactio.recipe.ingredient.FluidIngredient;
 import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import net.minecraft.core.BlockPos;
@@ -17,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
@@ -54,14 +51,11 @@ public class Events {
         }
     }
 
-    public static Map<ResourceLocation, RecipeStartPredicate<Object, StateHolder<?, ?>, CraftingInfo>> startPredicates = new HashMap<>();
-    public static Map<ResourceLocation, RecipeContinuePredicate<Object, CraftingInfo>> continuePredicates = new HashMap<>();
-    public static Map<ResourceLocation, RecipeEvent<Object, CraftingInfo>> events = new HashMap<>();
-    public static Map<ResourceLocation, RecipeTickEvent<Object, StateHolder<?, ?>>> tickEvents = new HashMap<>();
+    public static Map<ResourceLocation, RecipePredicate<?>> predicates = new HashMap<>();
+    public static Map<ResourceLocation, RecipeEvent<?>> events = new HashMap<>();
 
     public static void init() {
         events.put(new ResourceLocation("particle"), (inputs, info, json) -> sendParticle(info));
-        tickEvents.put(new ResourceLocation("particle"), (inputs, state, info, json) -> sendParticle(info));
 
         events.put(new ResourceLocation("consume_fluids"), (inputs, info, json) -> {
             FluidIngredient fluidInput = info.getRecipe().getFluidInput();
@@ -88,7 +82,7 @@ public class Events {
         });
 
         events.put(new ResourceLocation("damage_anvil"), Events::damageAnvil);
-        continuePredicates.put(new ResourceLocation("damage_anvil"), Events::damageAnvil);
+        predicates.put(new ResourceLocation("damage_anvil"), Events::damageAnvil);
     }
 
     private static boolean damageAnvil(Object inputs, CraftingInfo info, JsonObject json) {

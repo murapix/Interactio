@@ -5,7 +5,7 @@ import ky.someone.mods.interactio.recipe.base.InWorldRecipeType;
 import ky.someone.mods.interactio.recipe.base.StatelessItemRecipe;
 import ky.someone.mods.interactio.recipe.ingredient.DynamicOutput;
 import ky.someone.mods.interactio.recipe.ingredient.ItemIngredient;
-import ky.someone.mods.interactio.recipe.util.DefaultInfo;
+import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -13,7 +13,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.List;
 
-public final class ItemLightningRecipe extends StatelessItemRecipe<DefaultInfo> {
+public final class ItemLightningRecipe extends StatelessItemRecipe<CraftingInfo> {
 
     public static final Serializer SERIALIZER = new Serializer();
 

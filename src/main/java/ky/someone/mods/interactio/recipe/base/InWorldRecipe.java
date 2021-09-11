@@ -26,7 +26,6 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -39,37 +38,37 @@ import static ky.someone.mods.interactio.Utils.*;
 /**
  * @param <T> A type of input or inputs. This will be what the recipe uses during crafts.
  * @param <S> Some kind of state that will be used to check whether a craft should be performed.
- * @param <U> A recipe info wrapper that will be used to provide information to {@link #craft(T, U)}
+ * @param <U> A recipe info wrapper that will be used to provide information to {@link #craft(T)}
  */
-public abstract class InWorldRecipe<T, S extends StateHolder<?, ?>, U extends CraftingInfo> implements Recipe<Container> {
+public abstract class InWorldRecipe<T, U extends CraftingInfo> implements Recipe<Container> {
 
     protected final JsonObject json;
 
     /**
-     * Conditions required for the crafting to begin, run once during {@link #canCraft(T, S, U)}
+     * Conditions required for the crafting to begin, run once during {@link #canCraft(T)}
      */
-    protected final Map<RecipeStartPredicate<T, S, U>, JsonObject> startCraftConditions;
+    protected final Map<RecipePredicate<T>, JsonObject> startCraftConditions;
     /**
      * Conditions required for each individual craft to occur, run before each loop through the actual crafting process
      * in {@link #craft(Object, CraftingInfo)}
      */
-    protected final Map<RecipeContinuePredicate<T, U>, JsonObject> keepCraftingConditions;
+    protected final Map<RecipePredicate<T>, JsonObject> keepCraftingConditions;
     /**
      * Events to run at the start of {@link #craft(Object, CraftingInfo)}, before any crafting has occurred
      */
-    protected final Map<RecipeEvent<T, U>, JsonObject> onCraftStart;
+    protected final Map<RecipeEvent<T>, JsonObject> onCraftStart;
     /**
      * Events to run each time an actual craft will happen in {@link #craft(Object, CraftingInfo)}. Examples: Repairing a tool, damaging an anvil
      */
-    protected final Map<RecipeEvent<T, U>, JsonObject> preCraft;
+    protected final Map<RecipeEvent<T>, JsonObject> preCraft;
     /**
      * Events to run after each time a craft happens in {@link #craft(Object, CraftingInfo)}. Examples: Repairing a tool, damaging an anvil
      */
-    protected final Map<RecipeEvent<T, U>, JsonObject> postCraft;
+    protected final Map<RecipeEvent<T>, JsonObject> postCraft;
     /**
      * Events to run at the end of {@link #craft(Object, CraftingInfo)}, once all crafting has completed
      */
-    protected final Map<RecipeEvent<T, U>, JsonObject> onCraftEnd;
+    protected final Map<RecipeEvent<T>, JsonObject> onCraftEnd;
 
     protected final ResourceLocation id;
     protected final List<ItemIngredient> itemInputs;
@@ -93,7 +92,7 @@ public abstract class InWorldRecipe<T, S extends StateHolder<?, ?>, U extends Cr
         this.postCraft = new HashMap<>();
         this.onCraftEnd = new HashMap<>();
 
-        this.keepCraftingConditions.put((t, u, j) -> canRunParallel, null);
+        this.keepCraftingConditions.put((T, I, J) -> canRunParallel, null);
 
         this.parseEvents();
     }
@@ -105,7 +104,7 @@ public abstract class InWorldRecipe<T, S extends StateHolder<?, ?>, U extends Cr
      * This only exists is so we can have {@link RecipeManager}
      * load all of our recipes correctly.
      *
-     * @deprecated Use {@link #canCraft(T, S, U)} for validation instead.
+     * @deprecated Use {@link #canCraft(T)} for validation instead.
      */
     @Override
     @Deprecated
@@ -121,16 +120,16 @@ public abstract class InWorldRecipe<T, S extends StateHolder<?, ?>, U extends Cr
      * @param state  State we want to check our inputs against.
      * @return Should this in-world craft be performed?
      */
-    public abstract boolean canCraft(T inputs, S state, U info);
+    public abstract boolean canCraft(T inputs, U info);
 
     /**
      * Attempts to perform an in-world crafting recipe with the given parameters.
      * Beware: This does *not* necessarily check whether the craft can be performed first,
-     * so make sure to run {@link #canCraft(T, S, U)} first if you want to ensure nothing goes wrong.
+     * so make sure to run {@link #canCraft(T)} first if you want to ensure nothing goes wrong.
      *
      * @param inputs Collection (or otherwise) of inputs (for example item entities).
      *               This object WILL be manipulated by this method,
-     *               use {@link #canCraft(T, S, U)} if you don't want that to happen.
+     *               use {@link #canCraft(T)} if you don't want that to happen.
      * @param info   Additional information on the craft, like the world the craft is happening in or the affected Block's position
      */
     public abstract void craft(T inputs, U info);
@@ -198,7 +197,7 @@ public abstract class InWorldRecipe<T, S extends StateHolder<?, ?>, U extends Cr
         return this.json;
     }
 
-    public static abstract class InWorldRecipeSerializer<R extends InWorldRecipe<?, ?, ?>> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<R> {
+    public static abstract class InWorldRecipeSerializer<R extends InWorldRecipe<?, ?>> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<R> {
         @Override
         public R fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
             return fromJson(id, GsonHelper.parse(new String(buffer.readByteArray(), StandardCharsets.UTF_8)));
@@ -235,27 +234,27 @@ public abstract class InWorldRecipe<T, S extends StateHolder<?, ?>, U extends Cr
 
                 switch (eventType) {
                     case START_PREDICATES:
-                        RecipeStartPredicate<T, S, U> startPredicate = (RecipeStartPredicate<T, S, U>) Events.startPredicates.get(type);
+                        RecipePredicate<T> startPredicate = (RecipePredicate<T>) Events.predicates.get(type);
                         if (startPredicate != null) this.startCraftConditions.put(startPredicate, object);
                         break;
                     case CONTINUE_PREDICATES:
-                        RecipeContinuePredicate<T, U> continuePredicate = (RecipeContinuePredicate<T, U>) Events.continuePredicates.get(type);
+                        RecipePredicate<T> continuePredicate = (RecipePredicate<T>) Events.predicates.get(type);
                         if (continuePredicate != null) this.keepCraftingConditions.put(continuePredicate, object);
                         break;
                     case CRAFT_START:
-                        RecipeEvent<T, U> event = (RecipeEvent<T, U>) Events.events.get(type);
+                        RecipeEvent<T> event = (RecipeEvent<T>) Events.events.get(type);
                         if (event != null) this.onCraftStart.put(event, object);
                         break;
                     case PRE_CRAFT:
-                        event = (RecipeEvent<T, U>) Events.events.get(type);
+                        event = (RecipeEvent<T>) Events.events.get(type);
                         if (event != null) this.preCraft.put(event, object);
                         break;
                     case POST_CRAFT:
-                        event = (RecipeEvent<T, U>) Events.events.get(type);
+                        event = (RecipeEvent<T>) Events.events.get(type);
                         if (event != null) this.postCraft.put(event, object);
                         break;
                     case CRAFT_END:
-                        event = (RecipeEvent<T, U>) Events.events.get(type);
+                        event = (RecipeEvent<T>) Events.events.get(type);
                         if (event != null) this.onCraftEnd.put(event, object);
                         break;
                     default:
@@ -265,7 +264,7 @@ public abstract class InWorldRecipe<T, S extends StateHolder<?, ?>, U extends Cr
         }
     }
 
-    public static <S extends StateHolder<?, ?>, I extends CraftingInfo> void craftItemList(InWorldRecipe<List<ItemEntity>, S, I> recipe, List<ItemEntity> inputs, I info) {
+    public static <I extends CraftingInfo> void craftItemList(InWorldRecipe<List<ItemEntity>, I> recipe, List<ItemEntity> inputs, I info) {
         Level world = info.getWorld();
         BlockPos pos = info.getBlockPos();
 
@@ -288,7 +287,7 @@ public abstract class InWorldRecipe<T, S extends StateHolder<?, ?>, U extends Cr
         runAll(recipe.onCraftEnd, loopingEntities, info);
     }
 
-    public static <S extends StateHolder<?, ?>, I extends CraftingInfo> void craftBlock(InWorldRecipe<BlockPos, S, I> recipe, BlockPos input, I info) {
+    public static <I extends CraftingInfo> void craftBlock(InWorldRecipe<BlockPos, I> recipe, BlockPos input, I info) {
         Level world = info.getWorld();
         BlockPos pos = info.getBlockPos();
 

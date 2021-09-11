@@ -4,18 +4,26 @@ import com.google.gson.JsonObject;
 import ky.someone.mods.interactio.recipe.base.InWorldRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 
-public abstract class CraftingInfo {
-    protected final InWorldRecipe<?, ?, ?> recipe;
+public class CraftingInfo {
+    protected final InWorldRecipe<?, ?> recipe;
     protected final Level world;
+    protected final BlockPos pos;
+    protected final BlockState blockState;
+    protected final FluidState fluidState;
 
-    public CraftingInfo(InWorldRecipe<?, ?, ?> recipe, Level world) {
+    public CraftingInfo(InWorldRecipe<?, ?> recipe, Level world, BlockPos pos) {
         this.recipe = recipe;
         this.world = world;
+        this.pos = pos;
+        this.blockState = world.getBlockState(pos);
+        this.fluidState = world.getFluidState(pos);
     }
 
-    public InWorldRecipe<?, ?, ?> getRecipe() {
+    public InWorldRecipe<?, ?> getRecipe() {
         return recipe;
     }
 
@@ -27,7 +35,19 @@ public abstract class CraftingInfo {
         return recipe.getJson();
     }
 
-    public abstract Vec3 getPos();
+    public Vec3 getPos() {
+        return Vec3.atCenterOf(pos);
+    }
 
-    public abstract BlockPos getBlockPos();
+    public BlockPos getBlockPos() {
+        return pos;
+    }
+
+    public BlockState getBlockState() {
+        return blockState;
+    }
+
+    public FluidState getFluidState() {
+        return fluidState;
+    }
 }

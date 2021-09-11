@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import static ky.someone.mods.interactio.Utils.testAll;
 
-public final class BlockEntityKillRecipe extends InWorldRecipe<BlockPos, BlockState, EntityInfo> {
+public final class BlockEntityKillRecipe extends InWorldRecipe<BlockPos, EntityInfo> {
 
     public static final Serializer SERIALIZER = new Serializer();
     protected final EntityIngredient entityInput;
@@ -31,13 +31,13 @@ public final class BlockEntityKillRecipe extends InWorldRecipe<BlockPos, BlockSt
     }
 
     public boolean canCraft(LivingEntity entity, BlockPos pos, BlockState state, EntityInfo info) {
-        return this.entityInput.test(entity) && canCraft(pos, state, info);
+        return this.entityInput.test(entity) && canCraft(pos, info);
     }
 
     @Override
-    public boolean canCraft(BlockPos pos, BlockState state, EntityInfo info) {
-        return this.blockInput.test(state.getBlock())
-                && testAll(this.startCraftConditions, pos, state, info);
+    public boolean canCraft(BlockPos pos, EntityInfo info) {
+        return this.blockInput.test(info)
+                && testAll(this.startCraftConditions, pos, info);
     }
 
     @Override

@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+
+import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import ky.someone.mods.interactio.recipe.util.IEntrySerializer;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
@@ -79,6 +81,17 @@ public class BlockIngredient extends RecipeIngredient<Block> {
      */
     public boolean test(@Nullable BlockState state) {
         return test(state == null ? Blocks.AIR : state.getBlock());
+    }
+
+    /**
+     * Test for a match using CraftingInfo. Does not consider block amount.
+     * 
+     * 
+     * @param info CraftingInfo containing the BlockState to check the ingredient against
+     * @return True if the block matches the ingredient
+     */
+    public boolean test(@Nullable CraftingInfo info) {
+        return test(info == null ? Blocks.AIR.defaultBlockState() : info.getBlockState());
     }
 
     /**

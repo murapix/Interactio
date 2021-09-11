@@ -2,7 +2,7 @@ package ky.someone.mods.interactio.recipe.duration;
 
 import ky.someone.mods.interactio.recipe.base.DurationRecipe;
 import ky.someone.mods.interactio.recipe.base.InWorldRecipeType;
-import ky.someone.mods.interactio.recipe.util.DefaultInfo;
+import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.StateHolder;
@@ -10,17 +10,17 @@ import net.minecraft.world.level.block.state.StateHolder;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 
-public class DurationManager<R extends DurationRecipe<T, S>, T, S extends StateHolder<?, ?>> {
-    protected static Map<Class<? extends DurationRecipe<?, ?>>, Map<Level, DurationManager<?, ?, ?>>> managers = new HashMap<>();
+public class DurationManager<R extends DurationRecipe<T>, T> {
+    protected static Map<Class<? extends DurationRecipe<?>>, Map<Level, DurationManager<?, ?>>> managers = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    public static <R extends DurationRecipe<T, S>, T, S extends StateHolder<?, ?>> DurationManager<R, T, S> get(Level world, InWorldRecipeType<R> storage, Class<R> cls) {
-        return (DurationManager<R, T, S>) managers.computeIfAbsent(cls, k -> new WeakHashMap<>())
+    public static <R extends DurationRecipe<T>, T, S extends StateHolder<?, ?>> DurationManager<R, T> get(Level world, InWorldRecipeType<R> storage, Class<R> cls) {
+        return (DurationManager<R, T>) managers.computeIfAbsent(cls, k -> new WeakHashMap<>())
                 .computeIfAbsent(world, k -> new DurationManager<>(world, storage, cls));
     }
 
     protected Map<BlockPos, SimpleEntry<R, Integer>> existingRecipes;
-    protected RecipeDataTracker<T, S, R> tracker;
+    protected RecipeDataTracker<T, R> tracker;
     protected InWorldRecipeType<R> storage;
 
     protected DurationManager(Level world, InWorldRecipeType<R> storage, Class<R> cls) {
@@ -29,7 +29,7 @@ public class DurationManager<R extends DurationRecipe<T, S>, T, S extends StateH
         this.tracker = RecipeDataTracker.get(world, cls);
     }
 
-    public RecipeDataTracker<T, S, R> getTracker() {
+    public RecipeDataTracker<T, R> getTracker() {
         return this.tracker;
     }
 
@@ -43,14 +43,13 @@ public class DurationManager<R extends DurationRecipe<T, S>, T, S extends StateH
         List<BlockPos> toRemove = new LinkedList<>();
         this.existingRecipes.forEach((pos, entry) -> {
             T input = tracker.getInput(pos);
-            S state = tracker.getState(pos);
             R recipe = entry.getKey();
-            DefaultInfo info = new DefaultInfo(recipe, world, pos);
+            CraftingInfo info = new CraftingInfo(recipe, world, pos);
             int duration = entry.getValue() + 1;
-            if (input == null || state == null)
+            if (input == null)
                 toRemove.add(pos);
-            else if (recipe.canCraft(input, state, info)) {
-                recipe.tick(input, state, info);
+            else if (recipe.canCraft(input, info)) {
+                recipe.tick(input, info);
                 entry.setValue(duration);
                 if (recipe.isFinished(duration)) {
                     recipe.craft(input, info);
@@ -64,8 +63,8 @@ public class DurationManager<R extends DurationRecipe<T, S>, T, S extends StateH
             this.existingRecipes.remove(pos);
         toRemove.clear();
 
-        tracker.forEach((input, state, pos) -> {
-            storage.apply(recipe -> recipe.canCraft(input, state, new DefaultInfo(recipe, world, pos)),
+        tracker.forEach((input, pos) -> {
+            storage.apply(recipe -> recipe.canCraft(input, new CraftingInfo(recipe, world, pos)),
                     recipe -> trackOrCraft(world, pos, recipe, input));
         });
         tracker.clear();
@@ -73,7 +72,7 @@ public class DurationManager<R extends DurationRecipe<T, S>, T, S extends StateH
 
     private void trackOrCraft(Level world, BlockPos pos, R recipe, T input) {
         if (recipe.getDuration() == 0)
-            recipe.craft(input, new DefaultInfo(recipe, world, pos));
+            recipe.craft(input, new CraftingInfo(recipe, world, pos));
         else this.existingRecipes.put(pos, new SimpleEntry<>(recipe, 0));
     }
 }

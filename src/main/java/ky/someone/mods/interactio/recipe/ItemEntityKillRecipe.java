@@ -38,7 +38,7 @@ public final class ItemEntityKillRecipe extends StatelessItemRecipe<EntityInfo> 
     @Override
     public boolean canCraft(List<ItemEntity> entities, EntityInfo info) {
         return compareStacks(entities, this.itemInputs)
-                && testAll(this.startCraftConditions, entities, null, info);
+                && testAll(this.startCraftConditions, entities, info);
     }
 
     @Override

@@ -10,7 +10,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import ky.someone.mods.interactio.recipe.Events.EventType;
 import ky.someone.mods.interactio.recipe.ingredient.ItemIngredient;
 import ky.someone.mods.interactio.recipe.ingredient.WeightedOutput;
-import ky.someone.mods.interactio.recipe.util.DefaultInfo;
+import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import ky.someone.mods.interactio.recipe.util.IEntrySerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleOptions;
@@ -197,40 +197,22 @@ public final class Utils {
         return new Point((int) Math.round(newX), (int) Math.round(newY));
     }
 
-    public static <T, U> void runAll(Map<RecipeEvent<T, U>, JsonObject> events, T t, U u) {
-        events.forEach((event, json) -> event.accept(t, u, json));
+    public static <T> void runAll(Map<RecipeEvent<T>, JsonObject> events, T t, CraftingInfo info) {
+        events.forEach((event, json) -> event.accept(t, info, json));
     }
 
-    public static <T, U> void runAll(Map<RecipeTickEvent<T, U>, JsonObject> events, T t, U u, DefaultInfo info) {
-        events.forEach((event, json) -> event.accept(t, u, info, json));
-    }
-
-    public static <T, U, V> boolean testAll(Map<RecipeStartPredicate<T, U, V>, JsonObject> events, T t, U u, V v) {
-        return events.entrySet().stream().map(entry -> entry.getKey().test(t, u, v, entry.getValue())).reduce(true, (a, b) -> a && b);
-    }
-
-    public static <T, U> boolean testAll(Map<RecipeContinuePredicate<T, U>, JsonObject> events, T t, U u) {
-        return events.entrySet().stream().map(entry -> entry.getKey().test(t, u, entry.getValue())).reduce(true, (a, b) -> a && b);
+    public static <T> boolean testAll(Map<RecipePredicate<T>, JsonObject> events, T t, CraftingInfo info) {
+        return events.entrySet().stream().map(entry -> entry.getKey().test(t, info, entry.getValue())).reduce(true, (a, b) -> a && b);
     }
 
     @FunctionalInterface
-    public interface RecipeStartPredicate<T, U, V> {
-        boolean test(T t, U u, V v, JsonObject json);
+    public interface RecipePredicate<T> {
+        boolean test(T t, CraftingInfo info, JsonObject json);
     }
 
     @FunctionalInterface
-    public interface RecipeContinuePredicate<T, U> {
-        boolean test(T t, U u, JsonObject json);
-    }
-
-    @FunctionalInterface
-    public interface RecipeEvent<T, U> {
-        void accept(T t, U u, JsonObject json);
-    }
-
-    @FunctionalInterface
-    public interface RecipeTickEvent<T, U> {
-        void accept(T t, U u, DefaultInfo info, JsonObject json);
+    public interface RecipeEvent<T> {
+        void accept(T t, CraftingInfo info, JsonObject json);
     }
 
     @FunctionalInterface

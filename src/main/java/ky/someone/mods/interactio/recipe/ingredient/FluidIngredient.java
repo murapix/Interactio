@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+
+import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import ky.someone.mods.interactio.recipe.util.IEntrySerializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -107,6 +109,15 @@ public class FluidIngredient implements Predicate<FluidStack> {
     public boolean test(Level level, BlockPos pos) {
         return test(level, level.getFluidState(pos).getType())
                 && findConnectedSources(level, pos).size() >= this.count;
+    }
+
+    /**
+     * Test for a match using data from a CraftingInfo
+     * @param info The CraftingInfo containing the data around which to look for source blocks
+     * @return if the fluid matches the ingredient and there are enough source blocks connected to the given position
+     */
+    public boolean test(CraftingInfo info) {
+        return test(info.getWorld(), info.getBlockPos());
     }
 
     /**
