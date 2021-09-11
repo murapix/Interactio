@@ -42,12 +42,12 @@ dependencies {
 
     forge("net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}")
 
-    modCompile("me.shedaniel:architectury-forge:${architectury_version}")
+    modImplementation("me.shedaniel:architectury-forge:${architectury_version}")
 
-    modCompile("mezz.jei:jei-1.16.4:${jei_version}")
+    modImplementation("mezz.jei:jei-1.16.4:${jei_version}")
 
-    modCompile("curse.maven:kubejs-238086:3189113")
-    modCompile("curse.maven:rhino-416294:3187177")
+    modImplementation("curse.maven:kubejs-238086:3189113")
+    modImplementation("curse.maven:rhino-416294:3187177")
 
     modRuntime("curse.maven:top-245211:3157997")
 
