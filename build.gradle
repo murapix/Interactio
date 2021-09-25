@@ -11,7 +11,7 @@ archivesBaseName = project.archives_base_name
 version = "${mod_version}.${ENV.BUILD_NUMBER ?: "custom"}"
 group = project.maven_group
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '16'
 
 loom {
     silentMojangMappingsLicense()
