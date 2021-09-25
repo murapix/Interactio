@@ -6,14 +6,13 @@ import ky.someone.mods.interactio.recipe.duration.DurationManager;
 import ky.someone.mods.interactio.recipe.util.CraftingInfo;
 import ky.someone.mods.interactio.recipe.util.EntityInfo;
 import ky.someone.mods.interactio.recipe.util.ExplosionInfo;
-import me.shedaniel.architectury.event.events.*;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Explosion;
@@ -24,6 +23,13 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import dev.architectury.event.events.common.ExplosionEvent;
+import dev.architectury.event.events.common.LightningEvent;
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.BlockEvent;
+import dev.architectury.event.events.common.EntityEvent;
+import dev.architectury.event.events.common.TickEvent;
 
 import static ky.someone.mods.interactio.Utils.isAnvil;
 
@@ -36,7 +42,7 @@ public enum InteractioEventHandler {
         LightningEvent.STRIKE.register(InteractioEventHandler::bzzt);
         BlockEvent.FALLING_LAND.register(InteractioEventHandler::acme);
         EntityEvent.LIVING_DEATH.register(InteractioEventHandler::oof);
-        TickEvent.SERVER_WORLD_POST.register(DurationManager::tickAllRecipes);
+        TickEvent.SERVER_LEVEL_POST.register(DurationManager::tickAllRecipes);
     }
 
     public static void boom(Level level, Explosion explosion, List<Entity> entities) {
@@ -79,7 +85,7 @@ public enum InteractioEventHandler {
         InWorldRecipeType.BLOCK_LIGHTNING.applyAll(recipe -> recipe.canCraft(target, new CraftingInfo(recipe, level, target)),
                 recipe -> recipe.craft(target, new CraftingInfo(recipe, level, target)));
 
-        bolt.remove();
+        bolt.remove(RemovalReason.DISCARDED);
     }
 
     public static void acme(Level level, BlockPos pos, BlockState fallState, BlockState landOn, FallingBlockEntity entity) {
@@ -96,9 +102,9 @@ public enum InteractioEventHandler {
 
     }
 
-    public static InteractionResult oof(LivingEntity entity, DamageSource source) {
+    public static EventResult oof(LivingEntity entity, DamageSource source) {
         actualOof(entity, source);
-        return InteractionResult.PASS;
+        return EventResult.pass();
     }
 
     private static void actualOof(LivingEntity entity, DamageSource source) {

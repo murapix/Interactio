@@ -200,7 +200,7 @@ public class BlockIngredient extends RecipeIngredient<Block> {
         public JsonObject serialize() {
             JsonObject jsonobject = new JsonObject();
             // func_232975_b_ = checkId
-            jsonobject.addProperty("tag", BlockTags.getAllTags().getIdOrThrow(tag).toString());
+            jsonobject.addProperty("tag", BlockTags.getAllTags().getId(tag).toString());
             return jsonobject;
         }
     }

@@ -12,7 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.Level;
@@ -194,7 +194,7 @@ public class FluidIngredient implements Predicate<FluidStack> {
             return new SingleFluidList(fluid);
         } else if (json.has("tag")) {
             ResourceLocation id = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-            Tag<Fluid> tag = SerializationTags.getInstance().getFluids().getTag(id);
+            Tag<Fluid> tag = FluidTags.getAllTags().getTag(id);
             if (tag == null) {
                 throw new JsonSyntaxException("Unknown fluid tag '" + id + "'");
             }
@@ -273,7 +273,7 @@ public class FluidIngredient implements Predicate<FluidStack> {
         public JsonObject serialize() {
             JsonObject jsonobject = new JsonObject();
             // func_232975_b_ = checkId
-            jsonobject.addProperty("tag", SerializationTags.getInstance().getFluids().getIdOrThrow(tag).toString());
+            jsonobject.addProperty("tag", FluidTags.getAllTags().getId(tag).toString());
             return jsonobject;
         }
     }

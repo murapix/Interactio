@@ -24,7 +24,7 @@ public interface IEntrySerializer<T> {
     IEntrySerializer<ItemStack> ITEM = new IEntrySerializer<ItemStack>() {
         @Override
         public ItemStack read(JsonObject json) {
-            return ShapedRecipe.itemFromJson(json);
+            return ShapedRecipe.itemStackFromJson(json);
         }
 
         @Override

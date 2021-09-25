@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
 
 import javax.annotation.Nullable;
 
@@ -71,6 +71,7 @@ public abstract class ModProxy implements IProxy {
 
         @Nullable
         @Override
+        @SuppressWarnings("resource")
         public ClientLevel getWorld() {
             return Minecraft.getInstance().level;
         }

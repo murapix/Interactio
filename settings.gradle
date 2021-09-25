@@ -2,8 +2,9 @@ pluginManagement {
     repositories {
         jcenter()
         maven { url "https://maven.fabricmc.net/" }
-        maven { url "https://maven.shedaniel.me/" }
+        maven { url "https://maven.architectury.dev/" }
         maven { url "https://forge.modpacks.ch/maven/" }
+        maven { url "https://files.minecraftforge.net/maven/" }
         gradlePluginPortal()
     }
 }

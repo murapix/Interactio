@@ -188,7 +188,7 @@ public class EntityIngredient extends RecipeIngredient<EntityType<?>> {
         public JsonObject serialize() {
             JsonObject jsonobject = new JsonObject();
             // func_232975_b_ = checkId
-            jsonobject.addProperty("tag", EntityTypeTags.getAllTags().getIdOrThrow(tag).toString());
+            jsonobject.addProperty("tag", EntityTypeTags.getAllTags().getId(tag).toString());
             return jsonobject;
         }
     }

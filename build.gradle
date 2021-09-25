@@ -1,6 +1,6 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "5.0.0"
-    id "forgified-fabric-loom" version "0.6.67"
+    id "com.github.johnrengelman.shadow" version "7.0.0"
+    id "dev.architectury.loom" version "0.7.4-SNAPSHOT"
     id "java"
     id "idea"
 }
@@ -20,6 +20,7 @@ loom {
 }
 
 repositories {
+    mavenLocal()
     maven {
         url "https://www.cursemaven.com"
         content {
@@ -38,18 +39,17 @@ dependencies {
     minecraft("com.mojang:minecraft:${project.minecraft_version}")
 
     mappings(minecraft.officialMojangMappings())
-    //mappings("de.oceanlabs.mcp:mcp_snapshot:20201028-1.16.3")
 
     forge("net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}")
 
-    modImplementation("me.shedaniel:architectury-forge:${architectury_version}")
+    modImplementation("dev.architectury:architectury-forge:${architectury_version}")
 
-    modImplementation("mezz.jei:jei-1.16.4:${jei_version}")
+    modImplementation("mezz.jei:jei-1.17.1:${jei_version}")
 
-    modImplementation("curse.maven:kubejs-238086:3189113")
-    modImplementation("curse.maven:rhino-416294:3187177")
+    // modImplementation("curse.maven:kubejs-238086:3189113")
+    // modImplementation("curse.maven:rhino-416294:3187177")
 
-    modRuntime("curse.maven:top-245211:3157997")
+    modRuntime("curse.maven:top-245211:3430022")
 
     // nullable annoations
     compileOnly("com.google.code.findbugs:jsr305:3.+")

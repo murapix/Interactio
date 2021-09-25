@@ -4,7 +4,7 @@ import ky.someone.mods.interactio.event.InteractioEventHandler;
 import ky.someone.mods.interactio.proxy.IProxy;
 import ky.someone.mods.interactio.proxy.ModProxy;
 import ky.someone.mods.interactio.recipe.base.InWorldRecipeType;
-import me.shedaniel.architectury.event.events.RecipeUpdateEvent;
+import dev.architectury.event.events.client.ClientRecipeUpdateEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -38,7 +38,7 @@ public class Interactio {
 
         InteractioEventHandler.init();
 
-        RecipeUpdateEvent.EVENT.register((rm) -> InWorldRecipeType.clearCache());
+        ClientRecipeUpdateEvent.EVENT.register((rm) -> InWorldRecipeType.clearCache());
     }
 
     public static ResourceLocation id(String path) {
