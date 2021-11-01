@@ -39,7 +39,7 @@ repositories {
 dependencies {
     minecraft("com.mojang:minecraft:${project.minecraft_version}")
 
-    mappings(minecraft.officialMojangMappings())
+    mappings(loom.officialMojangMappings())
 
     forge("net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}")
 
@@ -50,7 +50,7 @@ dependencies {
     // modImplementation("curse.maven:kubejs-238086:3189113")
     // modImplementation("curse.maven:rhino-416294:3187177")
 
-    modRuntime("curse.maven:top-245211:3430022")
+    modRuntimeOnly("curse.maven:top-245211:3430022")
 
     // nullable annoations
     compileOnly("com.google.code.findbugs:jsr305:3.+")

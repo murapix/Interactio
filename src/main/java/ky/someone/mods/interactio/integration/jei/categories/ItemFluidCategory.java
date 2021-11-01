@@ -63,7 +63,7 @@ public class ItemFluidCategory implements IRecipeCategory<ItemFluidRecipe> {
 
         icon = guiHelper.createDrawableIngredient(new FluidStack(Fluids.FLOWING_WATER, 1000));
 
-        localizedName = Utils.translate("interactio.jei.fluid_fluid_transform", null).getString();
+        localizedName = Utils.translate("interactio.jei.fluid_fluid", null).getString();
     }
 
     @Override

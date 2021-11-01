@@ -34,7 +34,7 @@ public class BlockAnvilSmashingCategory implements IRecipeCategory<BlockAnvilSma
 
     public static final ResourceLocation UID = InWorldRecipeType.BLOCK_ANVIL.registryName;
 
-//    private final IGuiHelper guiHelper;
+    private final IGuiHelper guiHelper;
 
     private final IDrawableStatic background;
     private final IDrawableStatic overlay;
@@ -49,7 +49,7 @@ public class BlockAnvilSmashingCategory implements IRecipeCategory<BlockAnvilSma
     private final int height = 120;
 
     public BlockAnvilSmashingCategory(IGuiHelper guiHelper) {
-//        this.guiHelper = guiHelper;
+        this.guiHelper = guiHelper;
 
         background = guiHelper.createBlankDrawable(width, height);
         overlay = guiHelper.createDrawable(Interactio.id("textures/gui/anvil_smashing.png"), 0, 0, width, height);
@@ -58,7 +58,7 @@ public class BlockAnvilSmashingCategory implements IRecipeCategory<BlockAnvilSma
 
         anvil = guiHelper.createDrawableIngredient(new ItemStack(Items.ANVIL));
 
-        localizedName = Utils.translate("interactio.jei.block_anvil_smashing", null).getString();
+        localizedName = Utils.translate("interactio.jei.block_anvil", null).getString();
     }
 
     @Override
